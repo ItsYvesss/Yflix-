@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YFlix - Stream Videos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="#" class="logo" onclick="goHome()">
+                <i class="fas fa-play-circle"></i>
+                <span>YFlix</span>
+            </a>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search videos..." autocomplete="off">
+                <button class="search-btn" onclick="searchVideos()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="live-counter">
+                <i class="fas fa-eye"></i>
+                <span id="liveViews">0</span> watching now
+            </div>
+            <div id="authSection">
+                <button class="auth-btn" id="loginBtn" onclick="showLoginModal()">
+                    <i class="fas fa-user"></i> Sign In
+                </button>
+            </div>
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <img src="" alt="Avatar" class="user-avatar" id="userAvatar">
+                <span id="userName"></span>
+                <button onclick="signOut()" class="signout-btn">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="goHome()">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showTrending()">
+                <i class="fas fa-fire"></i>
+                <span>Trending</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSubscriptions()">
+                <i class="fas fa-folder"></i>
+                <span>Subscriptions</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="#" class="nav-item" onclick="showHistory()">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showLikedVideos()">
+                <i class="fas fa-thumbs-up"></i>
+                <span>Liked Videos</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showWatchLater()">
+                <i class="fas fa-clock"></i>
+                <span>Watch Later</span>
+            </a>
+            <div class="nav-divider"></div>
+            <div class="sidebar-section">
+                <h4>Categories</h4>
+                <a href="#" class="nav-item" onclick="searchByCategory('music')">
+                    <i class="fas fa-music"></i>
+                    <span>Music</span>
+                </a>
+                <a href="#" class="nav-item" onclick="searchByCategory('gaming')">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Gaming</span>
+                </a>
+                <a href="#" class="nav-item" onclick="searchByCategory('sports')">
+                    <i class="fas fa-futbol"></i>
+                    <span>Sports</span>
+                </a>
+                <a href="#" class="nav-item" onclick="searchByCategory('news')">
+                    <i class="fas fa-newspaper"></i>
+                    <span>News</span>
+                </a>
+                <a href="#" class="nav-item" onclick="searchByCategory('education')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Education</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Home Page -->
+        <div id="homePage">
+            <section class="hero-section">
+                <h1>Welcome to <span class="highlight">YFlix</span></h1>
+                <p>Discover millions of videos from around the world</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <i class="fas fa-video"></i>
+                        <span>1B+ Videos</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-users"></i>
+                        <span>500M+ Users</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-globe"></i>
+                        <span>100+ Countries</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="categories-section">
+                <h2><i class="fas fa-compass"></i> Explore Categories</h2>
+                <div class="categories-grid" id="categoriesGrid">
+                    <div class="category-card" onclick="searchByCategory('music')">
+                        <i class="fas fa-music"></i>
+                        <span>Music</span>
+                    </div>
+                    <div class="category-card" onclick="searchByCategory('gaming')">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Gaming</span>
+                    </div>
+                    <div class="category-card" onclick="searchByCategory('sports')">
+                        <i class="fas fa-futbol"></i>
+                        <span>Sports</span>
+                    </div>
+                    <div class="category-card" onclick="searchByCategory('news')">
+                        <i class="fas fa-newspaper"></i>
+                        <span>News</span>
+                    </div>
+                    <div class="category-card" onclick="searchByCategory('education')">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Education</span>
+                    </div>
+                    <div class="category-card" onclick="searchByCategory('comedy')">
+                        <i class="fas fa-laugh"></i>
+                        <span>Comedy</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="trending-section">
+                <h2><i class="fas fa-fire"></i> Trending Now</h2>
+                <div class="videos-grid" id="trendingVideos"></div>
+            </section>
+        </div>
+
+        <!-- Search Results Page -->
+        <div id="searchPage" style="display: none;">
+            <div class="page-header">
+                <h2 id="searchTitle">Search Results</h2>
+                <span class="results-count" id="resultsCount"></span>
+            </div>
+            <div class="videos-grid" id="searchResults"></div>
+            <div class="loader" id="searchLoader" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading videos...</p>
+            </div>
+        </div>
+
+        <!-- Video Player Page -->
+        <div id="videoPage" style="display: none;">
+            <div class="video-container">
+                <div class="video-player-wrapper">
+                    <div class="video-player" id="videoPlayer"></div>
+                    <div class="video-info">
+                        <h1 id="videoTitle"></h1>
+                        <div class="video-meta">
+                            <div class="video-stats">
+                                <span id="videoViews"></span>
+                                <span id="videoDate"></span>
+                            </div>
+                            <div class="video-actions">
+                                <button class="action-btn" onclick="likeVideo()">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span id="likeCount">0</span>
+                                </button>
+                                <button class="action-btn" onclick="dislikeVideo()">
+                                    <i class="fas fa-thumbs-down"></i>
+                                </button>
+                                <button class="action-btn" onclick="shareVideo()">
+                                    <i class="fas fa-share"></i>
+                                    Share
+                                </button>
+                                <button class="action-btn" onclick="saveToWatchLater()">
+                                    <i class="fas fa-clock"></i>
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <img src="" alt="Channel" class="channel-avatar" id="channelAvatar">
+                        <div class="channel-details">
+                            <h3 id="channelName"></h3>
+                            <span id="channelSubs"></span>
+                        </div>
+                        <button class="subscribe-btn" id="subscribeBtn">Subscribe</button>
+                    </div>
+                    <div class="video-description" id="videoDescription"></div>
+                </div>
+                <div class="related-videos">
+                    <h3>Related Videos</h3>
+                    <div id="relatedVideos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Page -->
+        <div id="historyPage" style="display: none;">
+            <div class="page-header">
+                <h2><i class="fas fa-history"></i> Watch History</h2>
+                <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+            </div>
+            <div class="videos-grid" id="historyVideos"></div>
+            <div class="empty-state" id="emptyHistory" style="display: none;">
+                <i class="fas fa-history"></i>
+                <h3>No watch history</h3>
+                <p>Videos you watch will appear here</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <i class="fas fa-play-circle logo-icon"></i>
+                <h2>Sign in to YFlix</h2>
+                <p>Continue to your account</p>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">Sign In</button>
+                    <button class="tab" onclick="switchTab('register')">Register</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Sign In</button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <button type="button" class="google-btn" onclick="googleSignIn()">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <button type="button" class="google-btn" onclick="googleSignIn()">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
